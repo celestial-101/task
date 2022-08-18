@@ -1,10 +1,14 @@
 package com.employee.liberin.services;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.employee.liberin.dto.EmployeeDto;
 import com.employee.liberin.entity.Employee;
 import com.employee.liberin.repositories.EmployeeRepo;
 
@@ -14,8 +18,12 @@ public class EmployeeServiceImplementation implements EmployeeService {
 	@Autowired
 	private EmployeeRepo employeeRepo;
 	
+	@Autowired
+	private ModelMapper modelMapper;
+	
 	@Override
-	public Employee saveEmployee(Employee employee) {
+	public EmployeeDto saveEmployee(EmployeeDto dto) {
+		Employee employee=from(dto);
 		String firstName=employee.getFirstName();
 		String lastName=employee.getLastName();
 		String designation=employee.getDesignation();
@@ -30,7 +38,8 @@ public class EmployeeServiceImplementation implements EmployeeService {
 		String e=email.replaceAll("\\s", "");
 		String d=e.toLowerCase();
 		employee.setEmail(d);
-		return employeeRepo.save(employee);
+	    employeeRepo.save(employee);
+	    return from(employee);
 	}
 	
 	public String generateRandomPassword(int len) {
@@ -42,5 +51,27 @@ public class EmployeeServiceImplementation implements EmployeeService {
 			sb.append(chars.charAt(rnd.nextInt(chars.length())));
 		return sb.toString();
 	}
-
+	
+	@Override 
+	public EmployeeDto findEmployee(long id) {
+		Employee employee=employeeRepo.getById(id);
+	    return from(employee);
+	}
+	
+	@Override
+	public List<EmployeeDto> findallEmployees(){
+		
+		List<Employee> e=employeeRepo.findAll();
+		return e.stream().map(ee->from(ee)).collect(Collectors.toList());
+			
+	}
+	
+	public Employee from(EmployeeDto dto) {
+		return modelMapper.map(dto, Employee.class);
+		
+	}
+	public EmployeeDto from(Employee employee) {
+		return modelMapper.map(employee, EmployeeDto.class);
+		
+	}
 }

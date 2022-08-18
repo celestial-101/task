@@ -1,9 +1,15 @@
 package com.employee.liberin.services;
 
-import com.employee.liberin.entity.Employee;
+import java.util.List;
+
+import com.employee.liberin.dto.EmployeeDto;
 
 public interface EmployeeService {
 
-	Employee saveEmployee(Employee employee);
+	EmployeeDto saveEmployee(EmployeeDto employee);
+
+	EmployeeDto findEmployee(long id);
+
+	List<EmployeeDto> findallEmployees();
 
 }
